@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 
-TOKEN  = "6240244195:AAGfzgpe-mRWR9xru-zq2QaFu5QjPvx_Ugc"
+TOKEN  = "6240244195:AAEDmAPNJGR0K0fZrR_eCJsv2XcIkpICOpk"
 
 url = f"https://api.telegram.org/bot{TOKEN}/"
 

@@ -108,7 +108,7 @@ def main() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(
-        "6240244195:AAGfzgpe-mRWR9xru-zq2QaFu5QjPvx_Ugc").build()
+        "6240244195:AAEDmAPNJGR0K0fZrR_eCJsv2XcIkpICOpk").build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))

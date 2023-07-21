@@ -3,6 +3,7 @@ import os
 import stripe
 import aiohttp
 from sendMessage import auth_invite
+import asyncio
 # This is a public sample test API key.
 # Don’t submit any personally identifiable information in requests made with this key.
 # Sign in to see your own test API key embedded in code samples.
@@ -29,7 +30,7 @@ def cancel():
 
 
 @app.route('/webhook', methods=['POST'])
-async def webhook():
+def webhook():
     
     event = None
     payload = request.data
@@ -58,7 +59,7 @@ async def webhook():
         user_id = metadata["user_id"]
         username = metadata["username"]
         type = metadata["monthly"]
-        await auth_invite(user_id=user_id)
+        asyncio.run(auth_invite(user_id=user_id))
         print('Payment for {} subscription for username : {} succeeded'.format(type,user_id))
         
     elif event['type'] == '.attached':
