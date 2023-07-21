@@ -29,7 +29,7 @@ def cancel():
 
 
 @app.route('/webhook', methods=['POST'])
-def webhook():
+async def webhook():
     event = None
     payload = request.data
 
@@ -51,12 +51,15 @@ def webhook():
             return jsonify(success=False)
 
     # Handle the event
-    if event and event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
-        print('Payment for {} succeeded'.format(payment_intent['amount']))
-        print(event['metadata'])
+    if event and event['type'] == 'checkout.session.completed':
+        metadata = event["metadata"]
+        user_id = metadata["user_id"]
+        username = metadata["username"]
+        type = metadata["monthly"]
+        await auth_invite(user_id=user_id)
+        print('Payment for {} subscription for username : {} succeeded'.format(type,user_id))
         
-    elif event['type'] == 'payment_method.attached':
+    elif event['type'] == '.attached':
         payment_method = event['data']['object']  # contains a stripe.PaymentMethod
         # Then define and call a method to handle the successful attachment of a PaymentMethod.
         # handle_payment_method_attached(payment_method)

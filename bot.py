@@ -51,7 +51,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.message
 
     await update.message.reply_text(text=f"Hello {user.from_user.first_name}")
-    await update.message.reply_text(text="Sam & Adah \n\nYour favourite reddit couple's \npremiuim channel \n\nPlease select your subscription plan:", reply_markup=reply_markup)
+    await update.message.reply_text(text="<strong>Sam & Adah</strong> \n\nYour favourite reddit couple's \npremiuim channel \n\nPlease select your subscription plan:", reply_markup=reply_markup,parse_mode=ParseMode.HTML)
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -83,7 +83,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             metadata={
                         "user_id": query.from_user.id,
                         "username": query.from_user.username,
-                        "date" : datetime.now().date
+                        "date" : datetime.now().date().strftime("%Y-%m-%d"),
+                        "type" : "monthly"
                     },
             mode='payment',
             success_url="https://substack-bot.onrender.com/success",
@@ -94,7 +95,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         button = InlineKeyboardButton(text="Link", url=url)
         reply_markup = InlineKeyboardMarkup([[button]])
         # Send the shortened text message with the inline keyboard
-        await query.message.edit_text("<strong>Monthly Plan</strong>\n\nYour benefits:\n&#9989; Sam &amp; Adah (Access to the channel)\n\nPrice: ₹250.00\nBilling period: 1 month\nBilling mode: recurring",parse_mode=ParseMode.HTML)
+        await query.message.edit_text("<strong>Monthly Plan</strong>\n\nYour benefits:\n&#9989; Sam &amp; Adah (Access to the channel)\n\nPrice: ₹250.00\nBilling period: 1 month\nBilling mode: one-time",parse_mode=ParseMode.HTML)
         await query.message.reply_text("Complete payment in below link", reply_markup=reply_markup)
 
 
