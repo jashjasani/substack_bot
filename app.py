@@ -6,13 +6,13 @@ from sendMessage import auth_invite
 # This is a public sample test API key.
 # Don’t submit any personally identifiable information in requests made with this key.
 # Sign in to see your own test API key embedded in code samples.
-stripe.api_key = 'sk_test_tR3PYbcVNZZ796tH88S4VQ2u'
+stripe.api_key = 'sk_test_51MxG33SA2e71Dz91F5a9eLJOANuxRy6lYhBgRb84yoPwlmotLGwLbBAx7QO4G13htPcK7d1Sv3dgYrjKYicyTajv00NYpBtLbw'
 
 # Replace this endpoint secret with your endpoint's unique secret
 # If you are testing with the CLI, find the secret by running 'stripe listen'
 # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
 # at https://dashboard.stripe.com/webhooks
-endpoint_secret = 'whsec_...'
+endpoint_secret = 'we_1NWCcKSA2e71Dz91vcC03C7X'
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -30,7 +30,7 @@ def cancel():
 
 @app.route('/webhook', methods=['POST'])
 async def webhook():
-    print("\n\n\nwebhook triggered")
+    
     event = None
     payload = request.data
 
