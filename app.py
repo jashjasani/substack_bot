@@ -35,6 +35,7 @@ async def webhook():
 
     try:
         event = json.loads(payload)
+        print(event)
     except:
         print('⚠️  Webhook error while parsing basic request.' + str(e))
         return jsonify(success=False)
