@@ -86,8 +86,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         "date" : datetime.now().date
                     },
             mode='payment',
-            success_url="https://google.com/cancel",
-            cancel_url="https://google.com/cancel",
+            success_url="https://substack-bot.onrender.com/success",
+            cancel_url="https://substack-bot.onrender.com/cancel",
 
         )
         url = session["url"]
