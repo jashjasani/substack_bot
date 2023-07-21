@@ -31,7 +31,7 @@ def cancel():
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    
+    print("hello")
     event = None
     payload = request.data
 
