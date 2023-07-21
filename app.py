@@ -30,6 +30,7 @@ def cancel():
 
 @app.route('/webhook', methods=['POST'])
 async def webhook():
+    print("\n\n\nwebhook triggered")
     event = None
     payload = request.data
 
