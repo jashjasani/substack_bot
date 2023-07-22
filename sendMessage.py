@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+from bot import application
 
 TOKEN  = "6240244195:AAEDmAPNJGR0K0fZrR_eCJsv2XcIkpICOpk"
 

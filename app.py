@@ -5,6 +5,7 @@ import aiohttp
 from sendMessage import auth_invite
 import asyncio
 import logging
+from bot import application
 # This is a public sample test API key.
 # Don’t submit any personally identifiable information in requests made with this key.
 # Sign in to see your own test API key embedded in code samples.
@@ -14,7 +15,7 @@ stripe.api_key = 'sk_test_51MxG33SA2e71Dz91F5a9eLJOANuxRy6lYhBgRb84yoPwlmotLGwLb
 # If you are testing with the CLI, find the secret by running 'stripe listen'
 # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
 # at https://dashboard.stripe.com/webhooks
-endpoint_secret = 'we_1NWCcKSA2e71Dz91vcC03C7X'
+endpoint_secret = 'whsec_xfWVd0ifxQFBgpybjUQYxrdzqiIiZ363'
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -33,7 +34,7 @@ def cancel():
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    print("hello")
+    
     event = None
     payload = request.data
 
@@ -57,11 +58,9 @@ def webhook():
 
     # Handle the event
     if event and event['type'] == 'checkout.session.completed':
-        metadata = event["metadata"]
-        user_id = metadata["user_id"]
-        username = metadata["username"]
-        type = metadata["monthly"]
-        asyncio.run(auth_invite(user_id=user_id))
+        user_id = event['data']['object']['metadata']['user_id']
+        application.bot.send_message(user_id,"payment succesful")
+        #asyncio.run(auth_invite(user_id=user_id,channel_id="-1001526244542"))
         print('Payment for {} subscription for username : {} succeeded'.format(type,user_id))
         
     elif event['type'] == '.attached':
@@ -73,3 +72,6 @@ def webhook():
         print('Unhandled event type {}'.format(event['type']))
 
     return jsonify(success=True)
+
+if __name__ == "__main__":
+	app.run(host="0.0.0.0",port=443)
