@@ -1,4 +1,3 @@
-from sendMessage import auth_invite,create_join_link
 import logging
 from telegram import __version__ as TG_VER
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, KeyboardButton
@@ -11,8 +10,19 @@ import aiohttp
 import asyncio
 from telegram.constants import ParseMode
 from datetime import datetime 
+import os
+from dotenv import load_dotenv
 
 
+
+load_dotenv()
+
+
+STRIPE_KEY = os.getenv("STRIPE_KEY")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHANNEL_ID = os.getenv("CHANNEL_ID")
+HTTP_LOC = os.getenv("HTTP_LOC")
+print(TELEGRAM_TOKEN)
 try:
     from telegram import __version_info__
 except ImportError:
@@ -33,11 +43,12 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
-stripe.api_key = "sk_test_51MxG33SA2e71Dz91F5a9eLJOANuxRy6lYhBgRb84yoPwlmotLGwLbBAx7QO4G13htPcK7d1Sv3dgYrjKYicyTajv00NYpBtLbw"
+
+
+stripe.api_key = STRIPE_KEY
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Sends a message with three inline buttons attached."""
     keyboard = [
         [
             InlineKeyboardButton("250 monthly", callback_data="1")
@@ -59,10 +70,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
 
     # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     await query.answer()
-
-    print(query.from_user.id)
 
     if query.data == "1":
         session = stripe.checkout.Session.create(
@@ -83,20 +91,81 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             metadata={
                         "user_id": query.from_user.id,
                         "username": query.from_user.username,
-                        "date" : datetime.now().date().strftime("%Y-%m-%d"),
-                        "type" : "monthly"
+                        "name" : query.from_user.full_name,
+                        "date" : datetime.now().date().strftime("%d-%m-%Y"),
+                        "type" : "M",
+                        "channel_id" : CHANNEL_ID
                     },
             mode='payment',
-            success_url="http://3.110.215.102:443/success",
-            cancel_url="http://3.110.215.102:443/cancel",
+            success_url=f"http://{HTTP_LOC}/success",
+            cancel_url=f"http://{HTTP_LOC}/cancel",
 
         )
         url = session["url"]
-        button = InlineKeyboardButton(text="Link", url=url)
-        reply_markup = InlineKeyboardMarkup([[button]])
+        keyboard = [
+            [
+                InlineKeyboardButton(text="Payment Link", url=url)
+            ],
+            [
+                InlineKeyboardButton(text="<< Back", callback_data="back_to_start")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
         # Send the shortened text message with the inline keyboard
         await query.message.edit_text("<strong>Monthly Plan</strong>\n\nYour benefits:\n&#9989; Sam &amp; Adah (Access to the channel)\n\nPrice: ₹250.00\nBilling period: 1 month\nBilling mode: one-time",parse_mode=ParseMode.HTML)
-        await query.message.reply_text("Complete payment in below link", reply_markup=reply_markup)
+        await query.message.reply_text("Complete payment in below link 👇", reply_markup=reply_markup)
+    elif query.data == "2":
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'inr',  # Replace with the appropriate currency
+                        'unit_amount': 150000,  # Price amount in cents
+                        'product_data': {
+                            'name': 'Life-time subscription',
+                            'description': 'Lifetime membership',
+                        },
+                    },
+                    'quantity': 1,
+                },
+            ],
+            metadata={
+                        "user_id": query.from_user.id,
+                        "username": query.from_user.username,
+                        "name" : query.from_user.full_name,
+                        "type" : "L",
+                        "channel_id" : CHANNEL_ID
+                    },
+            mode='payment',
+            success_url=f"http://{HTTP_LOC}/success",
+            cancel_url=f"http://{HTTP_LOC}/cancel",
+
+        )
+        url = session["url"]
+        keyboard = [
+            [
+                InlineKeyboardButton(text="Payment Link", url=url)
+            ],
+            [
+                InlineKeyboardButton(text="<< Back", callback_data="back_to_start")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        # Send the shortened text message with the inline keyboard
+        await query.message.edit_text("<strong>Monthly Plan</strong>\n\nYour benefits:\n&#9989; Sam &amp; Adah (Access to the channel)\n\nPrice: ₹1500.00\nBilling period: lifetime",parse_mode=ParseMode.HTML)
+        await query.message.reply_text("Complete payment in below link 👇", reply_markup=reply_markup)
+    elif query.data =="back_to_start":
+        keyboard = [
+            [
+                InlineKeyboardButton("250 monthly", callback_data="1")
+            ],
+            [
+                InlineKeyboardButton("1500 lifetime", callback_data="2")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.edit_text(text="<strong>Sam & Adah</strong> \n\nYour favourite reddit couple's \npremiuim channel \n\nPlease select your subscription plan:", reply_markup=reply_markup,parse_mode=ParseMode.HTML)
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -105,19 +174,16 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 def main() -> None:
-    """Run the bot."""
     # Create the Application and pass it your bot's token.
-    
-
+    application = Application.builder().token(TELEGRAM_TOKEN).build()
+    application.bot.promote_chat_member()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(CommandHandler("help", help_command))
     
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
-    #! /usr/bin/env python3.6
-
+   
 
 if __name__ == "__main__":
-    application = Application.builder().token("6240244195:AAEDmAPNJGR0K0fZrR_eCJsv2XcIkpICOpk").build()
     main()
