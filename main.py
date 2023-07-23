@@ -2,7 +2,7 @@
 import subprocess
 
 if __name__ == '__main__':
-    flask_command = ['python', '-m', 'flask', 'run', '--port=4242', '--host=0.0.0.0']
+    flask_command = ['python','app.py']
     telegram_command = ['python', 'bot.py']
 
 
