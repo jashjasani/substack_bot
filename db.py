@@ -13,7 +13,6 @@ DATA_BASE_NAME = "Users"
 class User(Document):
     user_id = IntField(required=True)
     username = StringField()
-    name = StringField()
     start_date = DateTimeField(required=True)
     type = StringField(required=True)
     channel_id = StringField(required=True)

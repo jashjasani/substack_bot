@@ -86,16 +86,18 @@ def webhook():
         elif subscription_type == "L":
             end_date = (datetime.now() + timedelta(days=365*99)).date()
         if not findUser(COLLECTION_NAME, user_id=user_id):
-            addUser({
-                "user_id" : int(user_id),
-                "username" : str(username),
-                "name" : str(name),
-                "type" : str(type),
-                "channel_id" : str(channel_id),
-                "email" : str(email),
-                "start_date" : start_date,
-                "end_date" : end_date
-            })
+            data = {
+                "user_id": user_id,
+                "username": username,
+                "type": type,
+                "channel_id": channel_id,
+                "email": email,
+                "start_date": start_date,
+                "end_date": end_date
+            }
+            print(data)
+            data = {k: v for k, v in data.items() if v is not None}
+            addUser(data=data)
             asyncio.run(send_invite(channel_id,user_id))
     elif event['type'] == '.attached':
         payment_method = event['data']['object']  # contains a stripe.PaymentMethod
