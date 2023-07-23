@@ -12,7 +12,7 @@ from telegram.constants import ParseMode
 from datetime import datetime 
 import os
 from dotenv import load_dotenv
-
+from db import findUser
 
 
 load_dotenv()
@@ -22,7 +22,7 @@ STRIPE_KEY = os.getenv("STRIPE_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 HTTP_LOC = os.getenv("HTTP_LOC")
-print(TELEGRAM_TOKEN)
+
 try:
     from telegram import __version_info__
 except ImportError:
@@ -173,11 +173,26 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("Use /start to test this bot.")
 
 
+async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_id = update.message.from_user.id
+    user = findUser("user",user_id=user_id)
+    if user:
+        type = user["type"]
+        end_date = user["end_date"]
+        if type == "M":
+            await update.message.reply_text(f"You are subscribed to monthly plan ✅\nYour current plan is ending on : {end_date}")
+        elif type == "L":
+            await update.message.reply_text(f"Yayyy!!! you are subscribed to lifetime plan ✅")
+    else:
+        await update.message.reply_text(f"No active subscriptions ❌")
+
+
 def main() -> None:
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(TELEGRAM_TOKEN).build()
-    application.bot.promote_chat_member()
+
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("status", status_command))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(CommandHandler("help", help_command))
     

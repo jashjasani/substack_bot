@@ -2,8 +2,8 @@
 import subprocess
 
 if __name__ == '__main__':
-    flask_command = ['python','app.py']
-    telegram_command = ['python', 'bot.py']
+    flask_command = ['venv\Scripts\python','app.py']
+    telegram_command = ['venv\Scripts\python', 'bot.py']
 
 
     flask_process = subprocess.Popen(flask_command)

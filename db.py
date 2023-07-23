@@ -45,16 +45,3 @@ def findUser(collection_name, user_id):
             return result
     except Exception as e:
         print(e)    
-
-data = {
-            "user_id" : 1098,
-            "username" : "jacube",
-            "name" : "Jash",
-            "type" : "type",
-            "channel_id" : "channel_id",
-            "email" : "email",
-            "start_date" : datetime.now().date(),
-            "end_date" : datetime.now().date()
-        }
-
-print(findUser("user", 198))

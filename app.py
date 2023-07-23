@@ -87,12 +87,12 @@ def webhook():
             end_date = (datetime.now() + timedelta(days=365*99)).date()
         if not findUser(COLLECTION_NAME, user_id=user_id):
             addUser({
-                "user_id" : user_id,
-                "username" : username,
-                "name" : name,
-                "type" : type,
-                "channel_id" : channel_id,
-                "email" : email,
+                "user_id" : int(user_id),
+                "username" : str(username),
+                "name" : str(name),
+                "type" : str(type),
+                "channel_id" : str(channel_id),
+                "email" : str(email),
                 "start_date" : start_date,
                 "end_date" : end_date
             })
